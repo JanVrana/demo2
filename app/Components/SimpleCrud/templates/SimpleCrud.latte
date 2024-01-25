@@ -1,0 +1,101 @@
+<a n:href="Add!" class="waves-effect waves-light btn ajax item-add"><i class="material-icons left">add</i>add</a>
+{* Main table *}
+{snippet snippetItemTable}
+    <table class="striped responsive-table highlight">
+        <thead>
+        <th><a n:href="Sort! 'id' " class="ajax">id</a></th>
+        <th><a n:href="Sort! 'name' " class="ajax">name</a></th>
+        <th>action</th>
+        </thead>
+        {foreach $items as $item}
+            <tr>
+                <td n:class="$isParentTable ? clickWhole" ><a n:href="Show! $item->id" n:tag-if="$isParentTable">{$item->id}</a></tdclas>
+                <td n:class="$isParentTable ? clickWhole" ><a n:href="Show! $item->id" n:tag-if="$isParentTable">{$item->name}</a></td>
+                <td>
+                    <a n:href="Edit! $item->id"
+                            class="waves-effect waves-light btn ajax item-edit "><i
+                                class="material-icons left">edit</i>edit</a>
+                    <a n:href="Confirm! $item->id"
+                            class="waves-effect waves-light btn ajax item-delete "><i
+                                class="material-icons left">delete_forever</i>delete</a>
+                </td>
+            </tr>
+        {/foreach}
+    </table>
+{/snippet}
+
+<div class="divider"></div>
+{* paginator *}
+<div class="section">
+    <div class="row">
+        {snippet paginator}
+            <div class="col s2 ">Total: {$paginator->itemCount} rows</div>
+            <ul class="col s3 pagination">
+                <li n:class="$paginator->isFirst() ? disabled, !$paginator->isFirst() ? waves-effect">
+                    <a n:href="Page! $paginator->getPage() - 1" n:tag-if="!$paginator->isFirst()"
+                            class="ajax"><i
+                                class="material-icons">chevron_left</i></a></li>
+                {for $i = $paginator->getDirectLinksFrom(); $i < $paginator->getDirectLinksTo(); $i++}
+                    <li class="waves-effect {if $i == $paginator->getPage() }active{/if}">
+                        <a n:href="Page! $i" class="ajax">{$i+1}</a>
+                    </li>
+                {/for}
+                <li n:class="$paginator->isLast() ? disabled, !$paginator->isLast() ? waves-effect">
+                    <a n:href="Page! $paginator->getPage() + 1"  n:tag-if="!$paginator->isLast()"
+                            class="ajax"><i
+                                class="material-icons">chevron_right</i></a></li>
+            </ul>
+        {/snippet}
+        <div class="col s2 offset-s1">View items on the page:</div>
+        <div id="row-slider" class="col s3"></div>
+    </div>
+
+    {* variable settings that are used in script.js *}
+    <script>
+        let sliderItemsPerPageCount = {$paginator->getItemsPerPage()};
+        let sliderComponentName = {$control->getName()};
+        let sliderItemsPerPageSignal = {link ItemsPerPage!};
+    </script>
+
+</div>
+
+{* Flash messages for the component *}
+{snippet snippetFlash }
+    <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+{/snippet}
+
+{* Dialog for editing an item *}
+<div class="modal" id="modalEdit">
+    {snippet snippetEditForm}
+        <form n:name=editForm class=form>
+            <div class="modal-content">
+                <div>
+                    <label n:name=name>item name: <input n:name=name size=40 autofocus></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input n:name=storno class="waves-effect waves-light btn modal-close">
+                <input n:name=send class="ajax waves-effect waves-light btn red lighten-2 modal-close">
+            </div>
+        </form>
+    {/snippet}
+</div>
+
+{* Confirmation dialog about deleting the item *}
+<div class="modal" id="modalConfirm">
+    {snippet snippetConfirmForm}
+        {if isset($confirmItem)}
+            <div class="modal-content">
+                <h4>Do you wish to delete this item?</h4>
+                <p>id: {$confirmItem->id} name: {$confirmItem->name}</p>
+            </div>
+            <div class="modal-footer">
+                <a class="waves-effect waves-light btn modal-close"><i
+                            class="material-icons left">cancel</i>storno</a>
+                <a n:href="Delete! $confirmItem->id"
+                        class="waves-effect waves-light btn ajax item-delete red lighten-2 modal-close"><i
+                            class="material-icons left">delete_forever</i>delete</a>
+            </div>
+        {/if}
+    {/snippet}
+</div>
